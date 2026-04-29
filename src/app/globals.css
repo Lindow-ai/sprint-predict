@@ -1,26 +1,144 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* Warm-paper palette — exposed as Tailwind utilities */
+  --color-bg: #f4f1ea;
+  --color-bg-alt: #ebe6da;
+  --color-ink: #1a1814;
+  --color-ink-soft: #57524a;
+  --color-ink-faint: #8a8377;
+  --color-line: #d8d1c1;
+  --color-paper: #fbf9f4;
+  --color-orange: #ff5b1f;
+  --color-orange-soft: #ffe8dc;
+  --color-leaf: #1f6b3a;
+  --color-leaf-soft: #d8e7d9;
+  --color-amber: #b8761c;
+  --color-amber-soft: #f5e3c2;
+  --color-rust: #b73229;
+  --color-rust-soft: #f4d8d4;
+  --color-jira: #0052cc;
+  --color-jira-soft: #deebff;
+
+  /* shadcn semantic tokens mapped to warm palette */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Fonts (variables declared in layout.tsx via next/font) */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-heading: var(--font-fraunces), ui-serif, Georgia, serif;
+
+  --radius: 0.625rem;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  --animate-pulse-dot: pulse-dot 2s infinite;
+  --animate-fill-bar: fill-bar 1.6s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  --animate-bounce-dot: bounce-dot 0.6s infinite alternate;
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  @keyframes fill-bar {
+    from { width: 0%; }
+    to { width: var(--target-width, 78%); }
+  }
+  @keyframes bounce-dot {
+    to { transform: translateY(-6px); }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+:root {
+  --background: #f4f1ea;
+  --foreground: #1a1814;
+  --card: #fbf9f4;
+  --card-foreground: #1a1814;
+  --popover: #fbf9f4;
+  --popover-foreground: #1a1814;
+  --primary: #1a1814;
+  --primary-foreground: #f4f1ea;
+  --secondary: #ebe6da;
+  --secondary-foreground: #1a1814;
+  --muted: #ebe6da;
+  --muted-foreground: #8a8377;
+  --accent: #ff5b1f;
+  --accent-foreground: #ffffff;
+  --destructive: #b73229;
+  --border: #d8d1c1;
+  --input: #d8d1c1;
+  --ring: #ff5b1f;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    scroll-behavior: smooth;
+    background: var(--background);
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+  /* Grain overlay — fine, low-opacity film grain */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.18;
+    background-image: url("data:image/svg+xml;utf8,<svg width='320' height='320' viewBox='0 0 320 320' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='2.4' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0 0.05 0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 220px 220px;
+  }
+}
+
+/* Decorative underline accent for hero title */
+.underline-deco {
+  position: relative;
+  display: inline-block;
+}
+.underline-deco::after {
+  content: "";
+  position: absolute;
+  bottom: 0.05em;
+  left: -2%;
+  width: 104%;
+  height: 0.12em;
+  background: var(--accent);
+  opacity: 0.25;
+  z-index: -1;
 }
