@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useAuth, useRequireAuth } from "@/lib/auth";
+import { useAuth, useRequireAuth } from "@/features/auth";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { InitialsAvatar } from "@/components/data/initials-avatar";
 import { cn } from "@/lib/utils";
 import {
   HomeIcon,
@@ -76,17 +76,15 @@ export default function DashboardLayout({
   }
 
   return (
-    <TooltipProvider>
-      <div className="relative z-[2] min-h-screen grid grid-cols-1 lg:grid-cols-[260px_1fr]">
-        <Sidebar />
-        <div className="flex flex-col min-w-0">
-          <Topbar />
-          <main className="flex-1 p-6 lg:p-10 max-w-[1320px] w-full mx-auto">
-            {children}
-          </main>
-        </div>
+    <div className="relative z-[2] min-h-screen grid grid-cols-1 lg:grid-cols-[260px_1fr]">
+      <Sidebar />
+      <div className="flex flex-col min-w-0">
+        <Topbar />
+        <main className="flex-1 p-6 lg:p-10 max-w-[1320px] w-full mx-auto">
+          {children}
+        </main>
       </div>
-    </TooltipProvider>
+    </div>
   );
 }
 
@@ -204,9 +202,7 @@ function Topbar() {
               className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-bg-alt transition-colors outline-none"
               data-slot="user-menu"
             >
-              <div className="size-8 rounded-full bg-orange text-white flex items-center justify-center font-serif font-medium text-sm">
-                {user!.initials}
-              </div>
+              <InitialsAvatar initials={user!.initials} tone="accent" size="lg" />
               <div className="hidden md:flex flex-col items-start leading-tight">
                 <span className="text-sm font-medium">{user!.name}</span>
                 <span className="font-mono text-[10px] uppercase text-ink-faint tracking-wider">

@@ -2,19 +2,12 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
-export type User = {
-  email: string;
-  name: string;
-  initials: string;
-  role: string;
-  team: string;
-};
+import type { User } from "./types";
 
 type AuthCtx = {
   user: User | null;
   loading: boolean;
-  login: (email: string, _password: string) => User;
+  login: (email: string, password: string) => User;
   logout: () => void;
 };
 
@@ -24,13 +17,14 @@ const STORAGE_KEY = "sp_user";
 function deriveUser(email: string): User {
   const local = email.split("@")[0] || "user";
   const parts = local.split(/[._-]+/).filter(Boolean);
-  const name = parts
-    .map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase())
-    .join(" ") || "Utilisateur";
+  const name =
+    parts
+      .map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase())
+      .join(" ") || "Utilisateur";
   const initials =
     parts.length >= 2
       ? (parts[0][0] + parts[1][0]).toUpperCase()
-      : (name.slice(0, 2)).toUpperCase();
+      : name.slice(0, 2).toUpperCase();
   return {
     email,
     name,

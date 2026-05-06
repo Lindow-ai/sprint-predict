@@ -1,16 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useAuth } from "@/lib/auth";
+import { useAuth } from "@/features/auth";
 import {
-  TICKETS,
-  CURRENT_SPRINT,
-  ticketsBySprint,
+  ticketRepo,
   distribution,
   avgScore,
-  scoreTrend,
-  type Ticket,
-} from "@/lib/mock-data";
+  ScorePill,
+} from "@/features/tickets";
+import { sprintRepo, scoreTrend } from "@/features/sprints";
+import { InitialsAvatar } from "@/components/data/initials-avatar";
 import {
   ArrowUpRightIcon,
   TrendingUpIcon,
@@ -23,14 +22,13 @@ import { cn } from "@/lib/utils";
 
 export default function DashboardHome() {
   const { user } = useAuth();
-  const sprintTickets = ticketsBySprint(CURRENT_SPRINT.id);
+  const currentSprint = sprintRepo.current();
+  const sprintTickets = ticketRepo.bySprint(currentSprint.id);
   const dist = distribution(sprintTickets);
   const avg = avgScore(sprintTickets);
   const trend = scoreTrend();
   const trendDelta = trend[trend.length - 1].score - trend[0].score;
-  const recent = [...TICKETS]
-    .sort((a, b) => b.analyzedAt.localeCompare(a.analyzedAt))
-    .slice(0, 6);
+  const recent = ticketRepo.recent(6);
   const blockers = sprintTickets
     .filter((t) => t.status === "critical")
     .sort((a, b) => a.score - b.score)
@@ -51,8 +49,8 @@ export default function DashboardHome() {
             </em>
           </h1>
           <p className="text-ink-soft mt-2">
-            {CURRENT_SPRINT.name} · {sprintTickets.length} tickets · démarre le{" "}
-            {new Date(CURRENT_SPRINT.startsAt).toLocaleDateString("fr-FR", {
+            {currentSprint.name} · {sprintTickets.length} tickets · démarre le{" "}
+            {new Date(currentSprint.startsAt).toLocaleDateString("fr-FR", {
               day: "numeric",
               month: "long",
             })}
@@ -200,9 +198,10 @@ export default function DashboardHome() {
                     </Td>
                     <Td className="hidden md:table-cell">
                       <div className="flex items-center gap-2">
-                        <div className="size-6 rounded-full bg-bg-alt text-ink text-[10px] font-medium flex items-center justify-center">
-                          {t.assigneeInitials}
-                        </div>
+                        <InitialsAvatar
+                          initials={t.assigneeInitials}
+                          size="sm"
+                        />
                         <span className="text-ink-soft text-xs">
                           {t.assignee}
                         </span>
@@ -459,30 +458,6 @@ function ScoreSparkline({ trend }: { trend: { sprint: string; score: number }[] 
         })}
       </div>
     </div>
-  );
-}
-
-function ScorePill({
-  score,
-  status,
-}: {
-  score: number;
-  status: Ticket["status"];
-}) {
-  const cls = {
-    ready: "bg-leaf-soft text-leaf",
-    warn: "bg-amber-soft text-amber",
-    critical: "bg-rust-soft text-rust",
-  }[status];
-  return (
-    <span
-      className={cn(
-        "font-mono text-xs font-semibold py-1 px-2 rounded-md tabular-nums",
-        cls,
-      )}
-    >
-      {score}
-    </span>
   );
 }
 

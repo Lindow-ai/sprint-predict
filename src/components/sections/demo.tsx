@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { presets, type Preset, type PresetKey } from "@/lib/presets";
+import {
+  landingPresets as presets,
+  type Preset,
+  type PresetKey,
+} from "@/features/analysis";
 
 const presetButtons: { key: PresetKey; label: string }[] = [
   { key: "weak", label: "Ticket faible" },

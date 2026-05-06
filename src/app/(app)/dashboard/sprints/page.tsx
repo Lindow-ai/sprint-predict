@@ -3,20 +3,23 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  SPRINTS,
-  ticketsBySprint,
+  ticketRepo,
   distribution,
   avgScore,
+  ScorePill,
   type TicketStatus,
   type Ticket,
-} from "@/lib/mock-data";
+} from "@/features/tickets";
+import { sprintRepo } from "@/features/sprints";
+import { InitialsAvatar } from "@/components/data/initials-avatar";
 import { cn } from "@/lib/utils";
 import { CalendarRangeIcon, FlagIcon, GripVerticalIcon } from "lucide-react";
 
+const SPRINTS = sprintRepo.list();
+
 export default function SprintsPage() {
   const [selectedId, setSelectedId] = useState(SPRINTS[SPRINTS.length - 1].id);
-  const selected = SPRINTS.find((s) => s.id === selectedId)!;
-  const tickets = ticketsBySprint(selected.id);
+  const tickets = ticketRepo.bySprint(selectedId);
   const dist = distribution(tickets);
   const avg = avgScore(tickets);
 
@@ -41,7 +44,7 @@ export default function SprintsPage() {
       {/* Sprint selector */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {SPRINTS.map((s) => {
-          const ts = ticketsBySprint(s.id);
+          const ts = ticketRepo.bySprint(s.id);
           const d = distribution(ts);
           const a = avgScore(ts);
           const active = s.id === selectedId;
@@ -207,32 +210,16 @@ function SwimCard({ ticket }: { ticket: Ticket }) {
               {ticket.jiraKey}
             </span>
             <div className="flex items-center gap-2">
-              <ScorePill score={ticket.score} status={ticket.status} />
-              <div className="size-5 rounded-full bg-bg-alt text-ink text-[9px] font-medium flex items-center justify-center">
-                {ticket.assigneeInitials}
-              </div>
+              <ScorePill
+                score={ticket.score}
+                status={ticket.status}
+                size="sm"
+              />
+              <InitialsAvatar initials={ticket.assigneeInitials} size="xs" />
             </div>
           </div>
         </div>
       </div>
     </Link>
-  );
-}
-
-function ScorePill({ score, status }: { score: number; status: TicketStatus }) {
-  const cls = {
-    ready: "bg-leaf-soft text-leaf",
-    warn: "bg-amber-soft text-amber",
-    critical: "bg-rust-soft text-rust",
-  }[status];
-  return (
-    <span
-      className={cn(
-        "font-mono text-[10px] font-semibold py-0.5 px-1.5 rounded tabular-nums",
-        cls,
-      )}
-    >
-      {score}
-    </span>
   );
 }

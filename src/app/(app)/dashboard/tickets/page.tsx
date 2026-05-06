@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { TICKETS, type Ticket, type TicketStatus } from "@/lib/mock-data";
+import {
+  ticketRepo,
+  ScorePill,
+  type TicketStatus,
+} from "@/features/tickets";
+import { InitialsAvatar } from "@/components/data/initials-avatar";
 import {
   Tabs,
   TabsList,
@@ -30,16 +35,16 @@ export default function TicketsListPage() {
 
   const counts = useMemo(
     () => ({
-      all: TICKETS.length,
-      ready: TICKETS.filter((t) => t.status === "ready").length,
-      warn: TICKETS.filter((t) => t.status === "warn").length,
-      critical: TICKETS.filter((t) => t.status === "critical").length,
+      all: ticketRepo.list().length,
+      ready: ticketRepo.list().filter((t) => t.status === "ready").length,
+      warn: ticketRepo.list().filter((t) => t.status === "warn").length,
+      critical: ticketRepo.list().filter((t) => t.status === "critical").length,
     }),
     [],
   );
 
   const rows = useMemo(() => {
-    let r = [...TICKETS];
+    let r = [...ticketRepo.list()];
     if (filter !== "all") r = r.filter((t) => t.status === filter);
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -175,9 +180,7 @@ export default function TicketsListPage() {
                 </Td>
                 <Td className="hidden md:table-cell">
                   <div className="flex items-center gap-2">
-                    <div className="size-6 rounded-full bg-bg-alt text-ink text-[10px] font-medium flex items-center justify-center">
-                      {t.assigneeInitials}
-                    </div>
+                    <InitialsAvatar initials={t.assigneeInitials} size="sm" />
                     <span className="text-ink-soft text-xs">{t.assignee}</span>
                   </div>
                 </Td>
@@ -290,24 +293,6 @@ function Badge({
   );
 }
 
-function ScorePill({ score, status }: { score: number; status: TicketStatus }) {
-  const cls = {
-    ready: "bg-leaf-soft text-leaf",
-    warn: "bg-amber-soft text-amber",
-    critical: "bg-rust-soft text-rust",
-  }[status];
-  return (
-    <span
-      className={cn(
-        "font-mono text-xs font-semibold py-1 px-2 rounded-md tabular-nums",
-        cls,
-      )}
-    >
-      {score}
-    </span>
-  );
-}
-
 function StatusLabel({ status }: { status: TicketStatus }) {
   const map = {
     ready: { label: "Prêt", cls: "text-leaf" },
@@ -346,5 +331,3 @@ function timeAgo(iso: string) {
   return new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 }
 
-// satisfy unused-import linter for Ticket type
-export type _T = Ticket;

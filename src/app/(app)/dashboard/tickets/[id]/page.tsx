@@ -4,11 +4,13 @@ import { use, useState } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  findTicket,
-  getTicketAnalysis,
-  type ScoreDimension,
+  ticketRepo,
+  StatusBadge,
+  statusVars,
   type TicketStatus,
-} from "@/lib/mock-data";
+} from "@/features/tickets";
+import { analysisRepo, type ScoreDimension } from "@/features/analysis";
+import { InitialsAvatar } from "@/components/data/initials-avatar";
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeftIcon,
@@ -27,13 +29,13 @@ export default function TicketDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const ticket = findTicket(id);
+  const ticket = ticketRepo.find(id);
   if (!ticket) notFound();
-  const analysis = getTicketAnalysis(ticket);
+  const analysis = analysisRepo.forTicket(ticket.id)!;
   const [posted, setPosted] = useState(false);
 
   const status = ticket.status;
-  const tone = toneFor(status);
+  const tone = statusVars(status);
 
   return (
     <div className="flex flex-col gap-6">
@@ -89,7 +91,7 @@ export default function TicketDetailPage({
               </span>
               <span
                 className="font-mono text-[11px] uppercase py-1 px-2.5 rounded-full font-semibold"
-                style={{ background: tone.bgVar, color: tone.fgVar }}
+                style={{ background: tone.bg, color: tone.fg }}
               >
                 {tone.label}
               </span>
@@ -112,9 +114,7 @@ export default function TicketDetailPage({
             <dl className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
               <Meta label="Assignée">
                 <div className="flex items-center gap-2">
-                  <div className="size-6 rounded-full bg-bg-alt text-ink text-[10px] font-medium flex items-center justify-center">
-                    {ticket.assigneeInitials}
-                  </div>
+                  <InitialsAvatar initials={ticket.assigneeInitials} size="sm" />
                   <span>{ticket.assignee}</span>
                 </div>
               </Meta>
@@ -338,34 +338,3 @@ function DimensionRow({ d }: { d: ScoreDimension }) {
   );
 }
 
-function StatusBadge({ status }: { status: TicketStatus }) {
-  const t = toneFor(status);
-  return (
-    <span
-      className="font-mono text-[11px] uppercase tracking-[0.05em] py-1 px-2.5 rounded-full font-semibold"
-      style={{ background: t.bgVar, color: t.fgVar }}
-    >
-      ● {t.label}
-    </span>
-  );
-}
-
-function toneFor(status: TicketStatus) {
-  if (status === "ready")
-    return {
-      label: "Prêt",
-      bgVar: "var(--color-leaf-soft)",
-      fgVar: "var(--color-leaf)",
-    };
-  if (status === "warn")
-    return {
-      label: "À clarifier",
-      bgVar: "var(--color-amber-soft)",
-      fgVar: "var(--color-amber)",
-    };
-  return {
-    label: "Bloquant",
-    bgVar: "var(--color-rust-soft)",
-    fgVar: "var(--color-rust)",
-  };
-}
