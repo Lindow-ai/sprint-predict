@@ -44,15 +44,15 @@ const NAV: { section: string; items: NavItem[] }[] = [
     items: [
       { href: "/dashboard", label: "Vue d'ensemble", icon: HomeIcon },
       { href: "/dashboard/tickets", label: "Tickets", icon: TicketIcon },
-      { href: "/dashboard/sprints", label: "Sprints", icon: CalendarRangeIcon, soon: true },
+      { href: "/dashboard/sprints", label: "Sprints", icon: CalendarRangeIcon },
       { href: "/dashboard/trends", label: "Tendances", icon: TrendingUpIcon, soon: true },
     ],
   },
   {
     section: "Configuration",
     items: [
-      { href: "/dashboard/templates", label: "Templates équipe", icon: LayersIcon, soon: true },
-      { href: "/dashboard/integrations", label: "Intégrations", icon: PlugIcon, soon: true },
+      { href: "/dashboard/templates", label: "Templates équipe", icon: LayersIcon },
+      { href: "/dashboard/integrations", label: "Intégrations", icon: PlugIcon },
       { href: "/dashboard/settings", label: "Paramètres", icon: SettingsIcon, soon: true },
     ],
   },

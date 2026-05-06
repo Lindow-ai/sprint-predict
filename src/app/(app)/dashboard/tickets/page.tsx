@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { TICKETS, type Ticket, type TicketStatus } from "@/lib/mock-data";
 import {
@@ -190,9 +191,12 @@ export default function TicketsListPage() {
                   {timeAgo(t.analyzedAt)}
                 </Td>
                 <Td className="text-right">
-                  <button className="font-medium text-orange text-xs hover:underline">
+                  <Link
+                    href={`/dashboard/tickets/${t.id}`}
+                    className="font-medium text-orange text-xs hover:underline"
+                  >
                     Ouvrir →
-                  </button>
+                  </Link>
                 </Td>
               </tr>
             ))}

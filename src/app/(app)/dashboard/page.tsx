@@ -145,9 +145,12 @@ export default function DashboardHome() {
                     {t.jiraKey} · {t.questionsCount} questions à clarifier
                   </div>
                 </div>
-                <button className="text-xs font-medium text-orange hover:underline shrink-0">
+                <Link
+                  href={`/dashboard/tickets/${t.id}`}
+                  className="text-xs font-medium text-orange hover:underline shrink-0"
+                >
                   Analyser →
-                </button>
+                </Link>
               </li>
             ))}
           </ul>
@@ -180,14 +183,17 @@ export default function DashboardHome() {
                     className="border-t border-line hover:bg-bg-alt/40 transition-colors"
                   >
                     <Td>
-                      <div className="flex flex-col gap-0.5">
-                        <span className="font-medium truncate max-w-[280px]">
+                      <Link
+                        href={`/dashboard/tickets/${t.id}`}
+                        className="flex flex-col gap-0.5 group"
+                      >
+                        <span className="font-medium truncate max-w-[280px] group-hover:text-orange transition-colors">
                           {t.title}
                         </span>
                         <span className="font-mono text-[11px] text-ink-faint">
                           {t.jiraKey} · {t.type}
                         </span>
-                      </div>
+                      </Link>
                     </Td>
                     <Td>
                       <ScorePill score={t.score} status={t.status} />
