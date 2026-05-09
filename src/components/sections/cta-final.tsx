@@ -1,10 +1,10 @@
+import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export function CtaFinal() {
-  return (
-    <section className="relative overflow-hidden bg-orange text-white py-[100px] text-center z-[2]">
+export const CtaFinal = () => (
+  <section className="relative overflow-hidden bg-orange text-white py-[100px] text-center z-[2]">
       {/* Big decorative wordmark */}
       <span
         aria-hidden
@@ -32,16 +32,7 @@ export function CtaFinal() {
             )}
           >
             Essayer la démo
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-            >
-              <path d="M5 12h14M13 5l7 7-7 7" />
-            </svg>
+            <ArrowRightIcon className="size-4" />
           </Link>
           <Link
             href="#pricing"
@@ -55,5 +46,4 @@ export function CtaFinal() {
         </div>
       </div>
     </section>
-  );
-}
+);

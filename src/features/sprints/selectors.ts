@@ -1,4 +1,4 @@
-import { ticketRepo, avgScore } from "@/features/tickets";
+import { avgScore, ticketRepo } from "@/features/tickets";
 import { sprintRepo } from "./repository";
 
 /**

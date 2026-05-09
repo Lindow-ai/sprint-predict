@@ -3,31 +3,29 @@
 import { use, useState } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  ticketRepo,
-  StatusBadge,
-  statusVars,
-  type TicketStatus,
-} from "@/features/tickets";
-import { analysisRepo, type ScoreDimension } from "@/features/analysis";
+import { ticketRepo, StatusBadge, statusVars } from "@/features/tickets";
+import { analysisRepo } from "@/features/analysis";
 import { InitialsAvatar } from "@/components/data/initials-avatar";
+import { PageCard } from "@/components/data/page-card";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Meta } from "./_components/meta";
+import { DimensionRow } from "./_components/dimension-row";
 import {
-  ArrowLeftIcon,
-  RefreshCwIcon,
-  ExternalLinkIcon,
   AlertCircleIcon,
+  ArrowLeftIcon,
   CheckCircle2Icon,
   CopyIcon,
+  ExternalLinkIcon,
+  RefreshCwIcon,
   SendIcon,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
-export default function TicketDetailPage({
-  params,
-}: {
+type Props = {
   params: Promise<{ id: string }>;
-}) {
+};
+
+const TicketDetailPage = ({ params }: Props) => {
   const { id } = use(params);
   const ticket = ticketRepo.find(id);
   if (!ticket) notFound();
@@ -77,8 +75,8 @@ export default function TicketDetailPage({
 
       {/* Main grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* Left — score + dimensions */}
-        <Card className="lg:col-span-7 bg-ink text-bg border-ink relative overflow-hidden">
+        {/* Score + dimensions */}
+        <PageCard className="lg:col-span-7 bg-ink text-bg border-ink relative overflow-hidden">
           <div className="absolute -top-16 -right-16 size-48 bg-orange/30 rounded-full blur-3xl pointer-events-none" />
           <div className="relative">
             <div className="font-mono text-[11px] uppercase tracking-[0.08em] text-orange mb-3">
@@ -103,18 +101,21 @@ export default function TicketDetailPage({
               ))}
             </div>
           </div>
-        </Card>
+        </PageCard>
 
-        {/* Right — meta */}
+        {/* Meta + Post-to-Jira */}
         <div className="lg:col-span-5 flex flex-col gap-4">
-          <Card>
+          <PageCard>
             <div className="font-mono text-[10px] uppercase tracking-[0.08em] text-ink-faint mb-3">
               Méta
             </div>
             <dl className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
               <Meta label="Assignée">
                 <div className="flex items-center gap-2">
-                  <InitialsAvatar initials={ticket.assigneeInitials} size="sm" />
+                  <InitialsAvatar
+                    initials={ticket.assigneeInitials}
+                    size="sm"
+                  />
                   <span>{ticket.assignee}</span>
                 </div>
               </Meta>
@@ -134,23 +135,18 @@ export default function TicketDetailPage({
                   {Math.round(ticket.reopenRisk * 100)}%
                 </span>
               </Meta>
-              <Meta label="Questions">
-                {ticket.questionsCount}
-              </Meta>
-              <Meta label="Critères">
-                {ticket.criteriaCount}
-              </Meta>
+              <Meta label="Questions">{ticket.questionsCount}</Meta>
+              <Meta label="Critères">{ticket.criteriaCount}</Meta>
             </dl>
-          </Card>
+          </PageCard>
 
-          {/* Post to Jira */}
-          <Card>
+          <PageCard>
             <div className="font-mono text-[10px] uppercase tracking-[0.08em] text-ink-faint mb-2">
               Auto-comment Jira
             </div>
             <p className="text-sm text-ink-soft leading-relaxed mb-4">
-              Poster ce résumé (score + questions + critères) directement
-              dans le ticket Jira en tant que commentaire bot.
+              Poster ce résumé (score + questions + critères) directement dans
+              le ticket Jira en tant que commentaire bot.
             </p>
             <button
               onClick={() => setPosted(true)}
@@ -164,23 +160,21 @@ export default function TicketDetailPage({
             >
               {posted ? (
                 <>
-                  <CheckCircle2Icon className="size-4" />
-                  Posté dans Jira
+                  <CheckCircle2Icon className="size-4" /> Posté dans Jira
                 </>
               ) : (
                 <>
-                  <SendIcon className="size-4" />
-                  Poster dans Jira
+                  <SendIcon className="size-4" /> Poster dans Jira
                 </>
               )}
             </button>
-          </Card>
+          </PageCard>
         </div>
       </div>
 
       {/* Questions + Criteria */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <Card className="lg:col-span-6">
+        <PageCard className="lg:col-span-6">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="font-serif text-[20px] tracking-[-0.01em]">
@@ -210,9 +204,9 @@ export default function TicketDetailPage({
               ))}
             </ul>
           )}
-        </Card>
+        </PageCard>
 
-        <Card className="lg:col-span-6">
+        <PageCard className="lg:col-span-6">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="font-serif text-[20px] tracking-[-0.01em]">
@@ -228,10 +222,7 @@ export default function TicketDetailPage({
           </div>
           <ul className="space-y-2.5">
             {analysis.criteria.map(([k, v], i) => (
-              <li
-                key={i}
-                className="flex gap-3 text-[13px] leading-snug pl-0"
-              >
+              <li key={i} className="flex gap-3 text-[13px] leading-snug pl-0">
                 <span className="size-5 shrink-0 mt-0.5 rounded-full bg-leaf text-white text-[10px] font-bold flex items-center justify-center">
                   ✓
                 </span>
@@ -244,7 +235,7 @@ export default function TicketDetailPage({
               </li>
             ))}
           </ul>
-        </Card>
+        </PageCard>
       </div>
 
       {/* Risk callout */}
@@ -258,83 +249,15 @@ export default function TicketDetailPage({
             <p className="text-sm text-ink-soft leading-relaxed">
               Notre modèle estime à{" "}
               <strong>{Math.round(ticket.reopenRisk * 100)}%</strong> la
-              probabilité que ce ticket soit re-ouvert après livraison.
-              Lever les ambiguïtés ci-dessus avant le sprint réduira ce
-              risque de manière significative.
+              probabilité que ce ticket soit re-ouvert après livraison. Lever
+              les ambiguïtés ci-dessus avant le sprint réduira ce risque de
+              manière significative.
             </p>
           </div>
         </div>
       )}
     </div>
   );
-}
+};
 
-/* ===== bits ===== */
-
-function Card({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <section
-      className={cn(
-        "bg-paper border border-line rounded-xl p-5 lg:p-6",
-        className,
-      )}
-    >
-      {children}
-    </section>
-  );
-}
-
-function Meta({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <dt className="font-mono text-[10px] uppercase text-ink-faint tracking-[0.05em] mb-1">
-        {label}
-      </dt>
-      <dd className="text-ink">{children}</dd>
-    </div>
-  );
-}
-
-function DimensionRow({ d }: { d: ScoreDimension }) {
-  const tone =
-    d.score >= 75
-      ? "bg-leaf"
-      : d.score >= 50
-      ? "bg-amber"
-      : "bg-rust";
-  return (
-    <div>
-      <div className="flex items-center justify-between text-[13px] mb-1.5">
-        <span className="text-bg/90 flex items-center gap-2">
-          {d.label}
-          <span className="font-mono text-[10px] uppercase text-bg/40">
-            poids {d.weight}%
-          </span>
-        </span>
-        <span className="font-mono text-bg tabular-nums">
-          {d.score}
-          <span className="text-bg/40">/100</span>
-        </span>
-      </div>
-      <div className="h-1.5 bg-bg/10 rounded-full overflow-hidden">
-        <div
-          className={cn("h-full rounded-full transition-all", tone)}
-          style={{ width: `${d.score}%` }}
-        />
-      </div>
-    </div>
-  );
-}
-
+export default TicketDetailPage;

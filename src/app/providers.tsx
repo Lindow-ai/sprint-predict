@@ -1,7 +1,7 @@
 "use client";
 
-import { AuthProvider } from "@/features/auth";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider } from "@/features/auth";
 
 /**
  * Single entry point for all global client providers.

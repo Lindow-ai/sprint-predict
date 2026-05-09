@@ -1,11 +1,10 @@
-export function Testimonial() {
-  return (
+export const Testimonial = () => (
     <section className="relative z-[2] pt-[60px] pb-[100px] border-t border-line">
       <div className="max-w-[1280px] mx-auto px-8">
         <p className="mt-[60px] font-serif italic font-normal text-ink leading-[1.25] tracking-[-0.02em] text-[clamp(28px,4vw,44px)] max-w-[900px] before:content-['“'] before:text-orange before:text-[1.5em] before:leading-none before:align-[-0.2em] before:mr-[0.05em]">
-          Avant Sprint Predict, on découvrait les ambiguïtés en milieu de sprint.
-          Maintenant, elles sortent au refinement. Le ratio de tickets re-ouverts a chuté
-          de moitié.
+          Avant Sprint Predict, on découvrait les ambiguïtés en milieu de
+          sprint. Maintenant, elles sortent au refinement. Le ratio de tickets
+          re-ouverts a chuté de moitié.
         </p>
         <div className="mt-7 flex items-center gap-3.5">
           <div className="w-11 h-11 bg-orange rounded-full flex items-center justify-center text-white font-serif font-medium text-lg">
@@ -20,5 +19,4 @@ export function Testimonial() {
         </div>
       </div>
     </section>
-  );
-}
+);

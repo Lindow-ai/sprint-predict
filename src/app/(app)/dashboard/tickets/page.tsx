@@ -8,26 +8,28 @@ import {
   type TicketStatus,
 } from "@/features/tickets";
 import { InitialsAvatar } from "@/components/data/initials-avatar";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Th, Td } from "@/components/data/data-cells";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { timeAgo } from "@/lib/utils/time";
+import { SortButton } from "./_components/sort-button";
+import { CountBadge } from "./_components/count-badge";
+import { StatusLabel } from "./_components/status-label";
+import { RiskBar } from "./_components/risk-bar";
 import {
-  SearchIcon,
-  ArrowUpDownIcon,
-  RefreshCwIcon,
-  DownloadIcon,
   AlertTriangleIcon,
+  DownloadIcon,
+  RefreshCwIcon,
+  SearchIcon,
 } from "lucide-react";
 
 type Filter = "all" | TicketStatus;
 type SortKey = "score" | "analyzedAt" | "title";
 
-export default function TicketsListPage() {
+const ALL_TICKETS = ticketRepo.list();
+
+const TicketsListPage = () => {
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("score");
@@ -35,16 +37,16 @@ export default function TicketsListPage() {
 
   const counts = useMemo(
     () => ({
-      all: ticketRepo.list().length,
-      ready: ticketRepo.list().filter((t) => t.status === "ready").length,
-      warn: ticketRepo.list().filter((t) => t.status === "warn").length,
-      critical: ticketRepo.list().filter((t) => t.status === "critical").length,
+      all: ALL_TICKETS.length,
+      ready: ALL_TICKETS.filter((t) => t.status === "ready").length,
+      warn: ALL_TICKETS.filter((t) => t.status === "warn").length,
+      critical: ALL_TICKETS.filter((t) => t.status === "critical").length,
     }),
     [],
   );
 
   const rows = useMemo(() => {
-    let r = [...ticketRepo.list()];
+    let r = [...ALL_TICKETS];
     if (filter !== "all") r = r.filter((t) => t.status === filter);
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -65,13 +67,13 @@ export default function TicketsListPage() {
     return r;
   }, [filter, search, sortKey, sortDir]);
 
-  function toggleSort(k: SortKey) {
+  const toggleSort = (k: SortKey) => {
     if (sortKey === k) setSortDir(sortDir === "asc" ? "desc" : "asc");
     else {
       setSortKey(k);
       setSortDir("asc");
     }
-  }
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -101,22 +103,19 @@ export default function TicketsListPage() {
       </div>
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <Tabs
-          value={filter}
-          onValueChange={(v) => setFilter(v as Filter)}
-        >
+        <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)}>
           <TabsList className="bg-paper border border-line">
             <TabsTrigger value="all">
-              Tous <Badge>{counts.all}</Badge>
+              Tous <CountBadge>{counts.all}</CountBadge>
             </TabsTrigger>
             <TabsTrigger value="ready">
-              Prêts <Badge tone="leaf">{counts.ready}</Badge>
+              Prêts <CountBadge tone="leaf">{counts.ready}</CountBadge>
             </TabsTrigger>
             <TabsTrigger value="warn">
-              À clarifier <Badge tone="amber">{counts.warn}</Badge>
+              À clarifier <CountBadge tone="amber">{counts.warn}</CountBadge>
             </TabsTrigger>
             <TabsTrigger value="critical">
-              Bloquants <Badge tone="rust">{counts.critical}</Badge>
+              Bloquants <CountBadge tone="rust">{counts.critical}</CountBadge>
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -137,23 +136,35 @@ export default function TicketsListPage() {
           <thead>
             <tr className="bg-bg-alt/40 text-left">
               <Th>
-                <SortBtn active={sortKey === "title"} dir={sortDir} onClick={() => toggleSort("title")}>
+                <SortButton
+                  active={sortKey === "title"}
+                  dir={sortDir}
+                  onClick={() => toggleSort("title")}
+                >
                   Ticket
-                </SortBtn>
+                </SortButton>
               </Th>
               <Th>
-                <SortBtn active={sortKey === "score"} dir={sortDir} onClick={() => toggleSort("score")}>
+                <SortButton
+                  active={sortKey === "score"}
+                  dir={sortDir}
+                  onClick={() => toggleSort("score")}
+                >
                   Score
-                </SortBtn>
+                </SortButton>
               </Th>
               <Th className="hidden lg:table-cell">Statut</Th>
               <Th className="hidden md:table-cell">Assignée</Th>
               <Th className="hidden lg:table-cell">Sprint</Th>
               <Th className="hidden lg:table-cell">Re-open risk</Th>
               <Th>
-                <SortBtn active={sortKey === "analyzedAt"} dir={sortDir} onClick={() => toggleSort("analyzedAt")}>
+                <SortButton
+                  active={sortKey === "analyzedAt"}
+                  dir={sortDir}
+                  onClick={() => toggleSort("analyzedAt")}
+                >
                   Analysé
-                </SortBtn>
+                </SortButton>
               </Th>
               <Th />
             </tr>
@@ -216,118 +227,6 @@ export default function TicketsListPage() {
       </div>
     </div>
   );
-}
+};
 
-/* ===== bits ===== */
-
-function Th({ children, className }: { children?: React.ReactNode; className?: string }) {
-  return (
-    <th
-      className={cn(
-        "font-mono text-[10px] uppercase tracking-[0.08em] text-ink-faint font-medium px-3 py-3",
-        className,
-      )}
-    >
-      {children}
-    </th>
-  );
-}
-
-function Td({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <td className={cn("px-3 py-3 align-middle", className)}>{children}</td>;
-}
-
-function SortBtn({
-  children,
-  active,
-  dir,
-  onClick,
-}: {
-  children: React.ReactNode;
-  active: boolean;
-  dir: "asc" | "desc";
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "inline-flex items-center gap-1 hover:text-ink transition-colors",
-        active && "text-ink",
-      )}
-    >
-      {children}
-      <ArrowUpDownIcon
-        className={cn(
-          "size-3 transition-transform",
-          active && dir === "desc" && "rotate-180",
-        )}
-      />
-    </button>
-  );
-}
-
-function Badge({
-  children,
-  tone = "neutral",
-}: {
-  children: React.ReactNode;
-  tone?: "neutral" | "leaf" | "amber" | "rust";
-}) {
-  const cls = {
-    neutral: "bg-line/50 text-ink-soft",
-    leaf: "bg-leaf-soft text-leaf",
-    amber: "bg-amber-soft text-amber",
-    rust: "bg-rust-soft text-rust",
-  }[tone];
-  return (
-    <span
-      className={cn(
-        "ml-1.5 font-mono text-[10px] font-semibold px-1.5 py-0.5 rounded tabular-nums",
-        cls,
-      )}
-    >
-      {children}
-    </span>
-  );
-}
-
-function StatusLabel({ status }: { status: TicketStatus }) {
-  const map = {
-    ready: { label: "Prêt", cls: "text-leaf" },
-    warn: { label: "À clarifier", cls: "text-amber" },
-    critical: { label: "Bloquant", cls: "text-rust" },
-  }[status];
-  return (
-    <span className={cn("font-mono text-[11px] uppercase tracking-[0.05em]", map.cls)}>
-      ● {map.label}
-    </span>
-  );
-}
-
-function RiskBar({ value }: { value: number }) {
-  const pct = Math.round(value * 100);
-  const tone =
-    pct >= 60 ? "bg-rust" : pct >= 35 ? "bg-amber" : "bg-leaf";
-  return (
-    <div className="flex items-center gap-2 w-28">
-      <div className="flex-1 h-1.5 bg-bg-alt rounded-full overflow-hidden">
-        <div className={cn("h-full rounded-full", tone)} style={{ width: `${pct}%` }} />
-      </div>
-      <span className="font-mono text-[10px] tabular-nums text-ink-faint w-8 text-right">
-        {pct}%
-      </span>
-    </div>
-  );
-}
-
-function timeAgo(iso: string) {
-  const diff = Date.now() - new Date(iso).getTime();
-  const days = Math.floor(diff / 86_400_000);
-  if (days === 0) return "Aujourd'hui";
-  if (days === 1) return "Hier";
-  if (days < 7) return `Il y a ${days} j`;
-  return new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
-}
-
+export default TicketsListPage;

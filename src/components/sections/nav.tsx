@@ -1,7 +1,7 @@
-import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const links = [
   { href: "#how", label: "Comment ça marche" },
@@ -10,9 +10,8 @@ const links = [
   { href: "#pricing", label: "Tarifs" },
 ];
 
-export function Nav() {
-  return (
-    <nav className="sticky top-0 z-50 backdrop-blur-md bg-bg/85 border-b border-line">
+export const Nav = () => (
+  <nav className="sticky top-0 z-50 backdrop-blur-md bg-bg/85 border-b border-line">
       <div className="max-w-[1280px] mx-auto px-8 py-[18px] flex items-center justify-between">
         <Logo />
         <ul className="hidden md:flex gap-9 list-none">
@@ -49,5 +48,4 @@ export function Nav() {
         </div>
       </div>
     </nav>
-  );
-}
+);
