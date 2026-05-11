@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/modals";
 import { cn } from "@/lib/utils";
 import { CheckCircle2Icon, PlugIcon, RefreshCwIcon, XIcon } from "lucide-react";
 import { JiraLogo } from "./jira-logo";
@@ -22,18 +24,23 @@ const PROJECTS = [
 export const JiraIntegration = () => {
   const [state, setState] = useState<ConnectionState>("disconnected");
   const [activeProjects, setActiveProjects] = useState<string[]>([]);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const connect = () => {
     setState("connecting");
     setTimeout(() => {
       setState("connected");
       setActiveProjects(["PROJ", "WEB"]);
+      toast.success("Jira connecté · acme.atlassian.net");
     }, 1200);
   };
 
-  const disconnect = () => {
+  const disconnect = async () => {
+    // Mock latency to demo the dialog's loading state.
+    await new Promise((r) => setTimeout(r, 500));
     setState("disconnected");
     setActiveProjects([]);
+    toast.info("Jira déconnecté");
   };
 
   const toggleProject = (key: string) => {
@@ -95,7 +102,7 @@ export const JiraIntegration = () => {
               </Button>
               <Button
                 variant="outline"
-                onClick={disconnect}
+                onClick={() => setConfirmOpen(true)}
                 className="border-line bg-paper h-10 text-rust hover:bg-rust-soft"
               >
                 <XIcon className="size-3.5" />
@@ -143,6 +150,24 @@ export const JiraIntegration = () => {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="Déconnecter Jira ?"
+        description={
+          <>
+            Sprint Predict arrêtera la synchro des tickets et le bot ne
+            postera plus de commentaires. Tu pourras reconnecter à tout
+            moment — tes templates et historiques d&apos;analyses sont
+            conservés.
+          </>
+        }
+        confirmLabel="Déconnecter"
+        cancelLabel="Annuler"
+        variant="destructive"
+        onConfirm={disconnect}
+      />
     </section>
   );
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import { NuqsAdapter } from "nuqs/adapters/next";
+import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/features/auth";
 
@@ -12,7 +13,10 @@ import { AuthProvider } from "@/features/auth";
 export const Providers = ({ children }: { children: React.ReactNode }) => (
   <NuqsAdapter>
     <AuthProvider>
-      <TooltipProvider>{children}</TooltipProvider>
+      <TooltipProvider>
+        {children}
+        <Toaster position="bottom-right" richColors closeButton />
+      </TooltipProvider>
     </AuthProvider>
   </NuqsAdapter>
 );
